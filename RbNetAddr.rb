@@ -8,6 +8,7 @@ class RbNetAddr
   attr_reader :cidr_mask
   attr_reader :network
   attr_reader :broadcast
+  attr_reader :range
 
   # regex to check if a string is an IP address
   @@ip_re = /^([0-9]{1,3}\.){3}[0-9]{1,3}$/
@@ -99,6 +100,7 @@ class RbNetAddr
     end
     calc_network
     calc_broadcast
+    calc_range
     return true
   end
 
@@ -169,6 +171,12 @@ class RbNetAddr
     @broadcast = network_splitter.join(".")
   end
 
+  # generate a range value from network and broadcast values
+  def calc_range
+    @range = ""
+    @range << @network << " - " << @broadcast
+  end
+
   # calculate and set cidr mask value from full subnet mask
   def calc_cidr_mask(mask)
     mask_splitter = mask.split(".")
@@ -193,7 +201,7 @@ end
 
 # examples below
 =begin
-print_netaddr = Proc.new { |netaddr| puts "Created netaddr object with address #{netaddr.address}, mask #{netaddr.mask}, network #{netaddr.network}/#{netaddr.cidr_mask}, broadcast #{netaddr.broadcast}" }
+print_netaddr = Proc.new { |netaddr| puts "Created netaddr object with address #{netaddr.address}, mask #{netaddr.mask}, network #{netaddr.network}/#{netaddr.cidr_mask}, broadcast #{netaddr.broadcast}, range #{netaddr.range}" }
 
 netaddr1 = RbNetAddr.new("192.168.56.10", "255.255.255.192")
 netaddr2 = RbNetAddr.new("192.168.0.0", "255.255.128.0")
